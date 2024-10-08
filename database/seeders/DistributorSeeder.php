@@ -14,10 +14,17 @@ class DistributorSeeder extends Seeder
     public function run(): void
     {
         DB::table("distributors")->insert([
-            'company_name'      => "Tian Mei",
-            'company_email'     => "tianmei@hotmail.com",
-            'company_phone'     => "1234567890",
-            'address'           => "long long address"
+            [
+                'company_name'      => "Tian Mei",
+                'company_email'     => "tianmei@hotmail.com",
+                'company_phone'     => "1234567890",
+                'address'           => "long long address"
+            ], [
+                'company_name'      => "Singapore",
+                'company_email'     => "sg@hotmail.com",
+                'company_phone'     => "1234567890",
+                'address'           => "long long address"
+            ]
         ]);
     }
 }

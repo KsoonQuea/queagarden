@@ -14,6 +14,8 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Wizard;
+use Filament\Forms\Components\Wizard\Step;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -34,63 +36,18 @@ class OrderResource extends Resource
 
         return $form
             ->schema([
-                Section::make('')
-                ->schema([
-                    Select::make('distributor_id')
-                    ->relationship('distributor', titleAttribute:'company_name')
-                    ->required(),
 
-                    Repeater::make('order_details')
-                    ->label("Carts")
-                    ->relationship('order_details')
-                    ->schema([
-                        Select::make('product_id')
-                        ->label('Product')
-                        ->relationship('product', titleAttribute:'name')
-                        ->reactive()
-                        ->afterStateUpdated(fn (callable $set) => $set('grade', null))
-                        ->native(false)
-                        ->required(),
-                        TextInput::make('market_price')
-                        ->label('Market Price')
-                        ->required(),
-                        TextInput::make('basket_qty')
-                        ->label('Basket Quantity')
-                        ->required(),
-                        TextInput::make('quoted_kg')
-                        ->label('Quoted Kilograms')
-                        ->required(),
-                        TextInput::make('real_kg')
-                        ->label('Real Kilograms')
-                        ->required(),
-                        Select::make('grade')
-                        ->label('Grade')
-                        ->options(fn (callable $get) => $OrderDetails->getGradeOptions($get('product_id')))
-                        ->disabled(fn (callable $get) => $get('product_id') === null)
-                        ->required()
-                    ])->columns(3)
-                ])
+                // Wizard::make([
+                //     Step::make('Information')
+                //     ->schema([
+                //         // Select::make('distributor_id')
+                //         // ->relationship('distributor', titleAttribute:'company_name')
+                //         // ->required(),
+                //     ])
+                // ])
 
-                    ]);
-            // ->actions([
-            //     Action::make('create')
-            //         ->label('Create')
-            //         ->modalHeading('Create New Record')
-            //         ->modalButton('Save')
-            //         ->modalWidth('md') // Customize modal width
-            //         ->form([
-            //             // Define modal form components here
-            //             Forms\Components\TextInput::make('name')
-            //                 ->required(),
-            //             Forms\Components\TextInput::make('description')
-            //                 ->required(),
-            //         ])
-            //         ->action(function (array $data) {
-            //             // Logic for creating the record
-            //             Order::create($data);
-            //         })
-            //         ->button(), // Custom create button inside the modal
-            // ]);
+            ]);
+
     }
 
 
@@ -123,9 +80,9 @@ class OrderResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListOrders::route('/'),
-            'create' => Pages\CreateOrder::route('/create'),
-            // 'edit' => Pages\EditOrder::route('/{record}/edit'),
+            'index'     => Pages\ListOrders::route('/'),
+            'create'    => Pages\CreateOrder::route('/create'),
+            // 'edit'      => Pages\EditOrder::route('/{record}/edit'),
         ];
     }
 }

@@ -29,6 +29,8 @@ class OrderDetails extends Model
 
     public function getGradeOptions($productOption)
     {
-        return explode(',', Product::where('id', $productOption)->first('grade_list')?->grade_list) ?? [];
+        return collect(explode(',', Product::where('id', $productOption)->first('grade_list')?->grade_list))
+        ->mapWithKeys(fn ($grade) => [$grade => $grade])
+        ->toArray();
     }
 }

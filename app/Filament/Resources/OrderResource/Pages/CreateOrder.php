@@ -20,14 +20,26 @@ use Filament\Forms\Get;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Pages\CreateRecord\Concerns\HasWizard;
 use Filament\Tables\Actions\CreateAction;
+use Illuminate\Log\Logger;
 
 class CreateOrder extends CreateRecord
 {
-
     use HasWizard;
 
-
     protected static string $resource = OrderResource::class;
+
+    protected $distributor_name;
+    protected $order_details;
+    protected $grouped_order_details;
+    protected $total_price;
+
+    public function mount() : void
+    {
+        $this->distributor_name         = "";
+        $this->grouped_order_details    = [];
+        $this->total_price              = 0;
+        $this->order_details            = [];
+    }
 
     protected function getSteps(): array
     {
@@ -75,17 +87,42 @@ class CreateOrder extends CreateRecord
                 ->options(fn (callable $get) => $OrderDetails->getGradeOptions($get('product_id')))
                 ->disabled(fn (callable $get) => $get('product_id') === null)
                 ->required()
-            ])->columns(3)
+            ])->columns(3),
         ];
     }
 
     protected function getSummarySchema(): array
     {
+
+        $this->order_details = $this->data['order_details'] ?? [];
+
+        $grouped = collect($this->order_details)->groupBy(function ($item) {
+            return $item['product_id'] . '-' . $item['grade'];
+        });
+
+        $this->grouped_order_details = $grouped->map(function ($items, $key) {
+            return [
+                'product_id'    => $items[0]['product_id'],
+                'grade'         => $items[0]['grade'],
+                'market_price'  => $items[0]['market_price'],
+                'basket_qty'    => $items->sum('basket_qty'),
+                'quoted_kg'     => $items->sum('quoted_kg'),
+                'real_kg'       => $items->sum('real_kg')
+            ];
+        });
+
+        $this->total_price = collect($this->grouped_order_details)->sum(function ($item) {
+            return $item['quoted_kg'] * $item['market_price'];
+        });
+
+        $this->distributor_name   = self::convertDistributorIDToName($this->data['distributor_id']??0);
+
+        $this->data['total_payment'] = $this->total_price;
+
         return [
-            View::make('filament.resources.order.create_summary')
-                ->viewData([
-                    'gg' => $this->data['distributor_id'] ?? 'None',
-                ])
+            View::make('filament.resources.order.create_summary'),
+
+            Hidden::make('total_payment')->default($this->total_price),
         ];
     }
 

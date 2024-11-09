@@ -1,18 +1,41 @@
 <div>
-    <h2>Order Summary {{ $gg }}</h2>
-    {{-- @dd($customData) --}}
-    <p>Name: {{ $this->convertDistributorIDToName($this->data['distributor_id']) }}</p>
+    <h2 class="text-2xl font-bold border-b border-gray-200 pb-2">Order Summary</h2>
+    <h4 class="text-lg font-medium">Distributor: {{ $this->distributor_name }}</h4>
 
-    @foreach ($this->data['order_details'] as $order_detail)
-    <div class="relative flex flex-col my-6 shadow-sm border border-gray-200 rounded-lg w-96">
-        <div class="p-4">
-            <p>Product: {{ $this->convertProductIDToName($order_detail['product_id']) }}</p>
-            <p>Market Price: {{ $order_detail['market_price'] }}</p>
-            <p>Basket Quantity: {{ $order_detail['basket_qty'] }}</p>
-            <p>Quoted Kilograms: {{ $order_detail['quoted_kg'] }}</p>
-            <p>Real Kilograms: {{ $order_detail['real_kg'] }}</p>
-            <p>Grade: {{ $order_detail['grade'] }}</p>
-        </div>
+    <table class="w-full border-4 border-red-400">
+        <thead>
+            <tr>
+                <td>Item</td>
+                <td>Market Price</td>
+                <td>Basket No.</td>
+                <td>KG</td>
+                <td>Total Price</td>
+            </tr>
+        </thead>
+        <tbody>
+        @forelse ($this->order_details ?? [] as $order_detail)
+            <tr>
+                <td class="text-sm text-gray-500">{{ $this->convertProductIDToName($order_detail['product_id']) }} ({{ $order_detail['grade'] }})</td>
+                <td class="text-sm text-gray-500">{{ $order_detail['market_price'] }} </td>
+                <td class="text-sm text-gray-500">{{ $order_detail['basket_qty'] }}    </td>
+                <td class="text-sm text-gray-500">{{ $order_detail['quoted_kg'] }}    </td>
+                <td class="text-sm text-gray-500">{{ $order_detail['quoted_kg'] * $order_detail['market_price'] }}</td>
+            </tr>
+
+            @empty
+            <tr>
+                <td class="text-sm text-gray-500" colspan="5">No data</td>
+            </tr>
+
+
+        @endforelse
+        </tbody>
+    </table>
+
+    <hr>
+
+    <div class="text-right">
+        <h4 class="text-lg font-medium">Total Price: {{ number_format($this->total_price) }} </h4>
     </div>
-    @endforeach
+
 </div>

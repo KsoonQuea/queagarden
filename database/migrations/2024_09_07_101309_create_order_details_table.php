@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal("quoted_kg");
             $table->decimal("real_kg");
             $table->integer("basket_qty");
-            $table->smallInteger("grade");
+            $table->tinyText("grade");
             $table->timestamps();
             $table->softDeletes();
         });

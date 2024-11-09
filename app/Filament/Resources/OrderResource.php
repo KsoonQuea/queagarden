@@ -55,13 +55,20 @@ class OrderResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('order_code')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('distributor.company_name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('total_payment')
+                    ->searchable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -83,6 +90,7 @@ class OrderResource extends Resource
             'index'     => Pages\ListOrders::route('/'),
             'create'    => Pages\CreateOrder::route('/create'),
             // 'edit'      => Pages\EditOrder::route('/{record}/edit'),
+            // 'view'      => Pages\CreateOrder::route('/{record}/edit'),
         ];
     }
 }

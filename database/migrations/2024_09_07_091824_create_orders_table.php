@@ -17,7 +17,7 @@ return new class extends Migration
             // $table->integer("distributor_id");
             $table->foreignId('distributor_id')->constrained('distributors')->cascadeOnDelete();
             $table->decimal("total_payment");
-            $table->smallInteger("payment_type");
+            $table->smallInteger("payment_type")->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
